@@ -4,9 +4,9 @@ Este proyecto es un asistente inteligente que recomienda videojuegos basados en 
 
 ## Instrucciones
 Para lanzar la demo localmente:
-1. **Instalar dependencias:** `pip install fastapi uvicorn gradio requests`
-2. **Lanzar Backend:** `python backend/server.py` (Se ejecuta en el puerto 8000)
-3. **Lanzar UI:** `python ui/app.py` (Se ejecuta en el puerto 7860)
+1. **Instalar dependencias:** `pip install fastapi uvicorn gradio requests` o `pip install -r requirements.txt`
+3. **Lanzar Backend:** `python backend/server.py` (Se ejecuta en el puerto 8000)
+4. **Lanzar UI:** `python ui/app.py` (Se ejecuta en el puerto 7860)
 
 ## Estructura del Repositorio
 * `backend/`: Servidor API basado en FastAPI.
