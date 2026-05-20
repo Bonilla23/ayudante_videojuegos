@@ -22,13 +22,6 @@ Crea un archivo `.env` en la raíz (opcional para Mock):
 AZURE_OPENAI_KEY=your_key_here
 AZURE_OPENAI_ENDPOINT=your_endpoint_here
 ```
-
-### Instalación
-```bash
-pip install -r requirements.txt
-```
-*(Nota: Crea un `requirements.txt` con `fastapi`, `uvicorn`, `gradio`, `requests`)*
-
 ### Ejecución
 **Backend:**
 ```bash
@@ -39,5 +32,4 @@ python backend/server.py
 ```bash
 python ui/app.py
 ```
-| Soy de Mac y me encantan los juegos de estrategia, ¿cual deberia comprar?    | JSON con output string     | Mock: Has preguntado... | Pase      |
-| (Vacio)                                                                      | JSON Error "INVALID_INPUT" | Error (INVALID_INPUT)   | Pase      |
+
