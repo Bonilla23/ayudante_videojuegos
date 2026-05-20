@@ -1,0 +1,3 @@
+{"input": "Me gusta Elden Ring y juego en Windows, ¿que me recomiendas?", "expected_format": "JSON OK"}
+{"input": "Soy de Mac y me encantan los juegos de estrategia, ¿cual deberia comprar?", "expected_format": "JSON OK"}
+{"input": "", "expected_format": "JSON Error (INVALID_INPUT)"}

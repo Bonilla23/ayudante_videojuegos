@@ -1,0 +1,8 @@
+# Ignoramos la carpeta docs
+docs/
+# Entorno virtual y temporales
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc

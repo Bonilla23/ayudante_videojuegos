@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+gradio
+requests
+pydantic
+python-dotenv
