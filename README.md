@@ -13,7 +13,6 @@ Para lanzar la demo localmente:
 * `ui/`: Interfaz de usuario basada en Gradio.
 * `tests/`: Casos de prueba iniciales (`smoke.jsonl`).
 * `data/`: Documentación y archivos para el RAG (futuro).
-* `docs/`: Documentación del proyecto.
 
 ## Configuración y Ejecución
 
