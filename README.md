@@ -1,4 +1,4 @@
-# Ayudante de Videojuegos - Vertical Slice
+# Ayudante de Videojuegos
 
 Este proyecto es un asistente inteligente que recomienda videojuegos basados en tus gustos (juegos que ya te gustan) y tu plataforma de escritorio (Windows, Mac o Linux), utilizando LLMs para ofrecer sugerencias personalizadas.
 
@@ -17,7 +17,7 @@ Para lanzar la demo localmente:
 ## Configuración y Ejecución
 
 ### Variables de Entorno
-Crea un archivo `.env` en la raíz (opcional para Mock):
+Crea un archivo `.env` en la raíz:
 ```env
 AZURE_OPENAI_KEY=your_key_here
 AZURE_OPENAI_ENDPOINT=your_endpoint_here
