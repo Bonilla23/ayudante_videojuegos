@@ -119,16 +119,23 @@ async def predict(request: PredictRequest):
             }
         }
 
+    # Debug: Ver qué llega al servidor
+    print(f"DEBUG: Procesando '{request.input}' para {request.platform}")
+
     try:
         messages = [
             {
                 "role": "system", 
                 "content": (
-                    "Eres un experto en recomendaciones de videojuegos. "
-                    f"Debes recomendar juegos compatibles con la plataforma {request.platform}. "
-                    "Tu respuesta debe ser EXCLUSIVAMENTE un objeto JSON con dos campos: "
-                    "'juego' (solo el nombre del juego) y 'motivo' (una breve explicación). "
-                    "Ejemplo: {\"juego\": \"Dirt 5\", \"motivo\": \"Género Racing y compatible con Windows\"}"
+                    "Eres un experto recomendador de videojuegos. Tu misión es sugerir un juego del MISMO GÉNERO y ESTILO "
+                    "que el que proporciona el usuario, pero que sea un título DISTINTO. "
+                    "No busques variedad, busca AFINIDAD TOTAL. "
+                    f"Asegúrate de que sea compatible con {request.platform}. "
+                    "Ejemplos de comportamiento esperado:\n"
+                    "- Input: Counter Strike -> Recomendación: Team Fortress 2 (Mismo género Action FPS)\n"
+                    "- Input: Skyrim -> Recomendación: Dragon's Dogma (Mismo género RPG Fantasía)\n"
+                    "- Input: Portal 2 -> Recomendación: The Talos Principle (Mismo género Puzzles)\n"
+                    "Responde siempre con un JSON con 'juego' y 'motivo' (explicando la similitud técnica y de género)."
                 )
             },
             {"role": "user", "content": request.input},

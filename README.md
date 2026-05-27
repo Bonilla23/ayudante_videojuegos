@@ -37,10 +37,8 @@ Este proyecto es un asistente inteligente que recomienda videojuegos basados en 
 
 ### Variables de Entorno (.env)
 ```env
-# Proveedor: foundry o mock
-LLM_PROVIDER="mock"
 GROUP_ID="G1" # Cambiar por tu grupo
-LOG_PATH="logs/logs.jsonl"
+LOG_PATH="logs/logs.jsonl" # Donde se guarda los Logs
 
 # Azure AI Foundry (DeepSeek)
 AZURE_OPENAI_ENDPOINT="https://cursoai-resource.services.ai.azure.com"
