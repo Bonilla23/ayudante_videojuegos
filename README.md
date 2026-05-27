@@ -1,4 +1,4 @@
-# Ayudante de Videojuegos - Vertical Slice
+# Ayudante de Videojuegos
 
 Este proyecto es un asistente inteligente que recomienda videojuegos basados en tus gustos y tu plataforma de escritorio, utilizando LLMs de Azure AI Foundry (DeepSeek) para ofrecer sugerencias personalizadas.
 
