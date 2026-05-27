@@ -46,7 +46,8 @@ class PredictRequest(BaseModel):
 
 class PredictResponse(BaseModel):
     ok: bool
-    output: Optional[str] = None
+    output: Optional[str] = None # Nombre del juego
+    motivo: Optional[str] = None # Razón de la recomendación
     meta: Optional[Dict[str, Any]] = None
     error: Optional[Dict[str, Any]] = None
 
@@ -62,19 +63,14 @@ async def predict(request: PredictRequest):
             }
         }
 
-    # Implementación del Plan B (Mock)
-    mock_output = (
-        f"Basado en tus gustos sobre '{request.input}' para la plataforma {request.platform}, "
-        "te recomiendo explorar títulos similares como 'Dark Souls 3' o 'Sekiro'. "
-        "Esta es una respuesta simulada (MOCK)."
-    )
-    
+    # Implementación del Plan B con el nuevo contrato (Ejemplo: Skyrim)
     return {
         "ok": True,
-        "output": mock_output,
+        "output": "Dragon's Dogma",
+        "motivo": f"Género RPG, categoría Open World y temática fantasía. Compatible con {request.platform}.",
         "meta": {
             "provider": "mock",
-            "deployment": "Mock-Model-V2",
+            "deployment": "Mock-Model-V3",
             "latency_ms": 10,
             "prompt_tokens": 0,
             "completion_tokens": 0,

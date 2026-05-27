@@ -102,7 +102,8 @@ class PredictRequest(BaseModel):
 
 class PredictResponse(BaseModel):
     ok: bool
-    output: Optional[str] = None
+    output: Optional[str] = None # Nombre del juego
+    motivo: Optional[str] = None # Razón
     meta: Optional[Dict[str, Any]] = None
     error: Optional[Dict[str, Any]] = None
 
@@ -120,7 +121,16 @@ async def predict(request: PredictRequest):
 
     try:
         messages = [
-            {"role": "system", "content": f"Eres un asistente útil especializado en videojuegos para la plataforma {request.platform}."},
+            {
+                "role": "system", 
+                "content": (
+                    "Eres un experto en recomendaciones de videojuegos. "
+                    f"Debes recomendar juegos compatibles con la plataforma {request.platform}. "
+                    "Tu respuesta debe ser EXCLUSIVAMENTE un objeto JSON con dos campos: "
+                    "'juego' (solo el nombre del juego) y 'motivo' (una breve explicación). "
+                    "Ejemplo: {\"juego\": \"Dirt 5\", \"motivo\": \"Género Racing y compatible con Windows\"}"
+                )
+            },
             {"role": "user", "content": request.input},
         ]
         
@@ -132,9 +142,27 @@ async def predict(request: PredictRequest):
             group_id=GROUP_ID
         )
         
+        # Intentar parsear la respuesta JSON del modelo
+        content = resp.choices[0].message.content.strip()
+        try:
+            # Eliminar posibles markdowns de bloque de código si el modelo los pone
+            if content.startswith("```json"):
+                content = content[7:-3].strip()
+            elif content.startswith("```"):
+                content = content[3:-3].strip()
+                
+            data = json.loads(content)
+            juego = data.get("juego", "No encontrado")
+            motivo = data.get("motivo", "No se proporcionó motivo")
+        except:
+            # Fallback si el modelo no devuelve JSON válido
+            juego = content
+            motivo = "No se pudo parsear el motivo del modelo."
+        
         return {
             "ok": True,
-            "output": resp.choices[0].message.content,
+            "output": juego,
+            "motivo": motivo,
             "meta": {
                 "provider": "foundry",
                 "deployment": AZURE_OPENAI_DEPLOYMENT_NAME,
