@@ -6,22 +6,12 @@ Este proyecto es un asistente inteligente que recomienda videojuegos basados en 
 
 ### Link a la demo / Instrucciones
 1. **Instalar dependencias:** `pip install -r requirements.txt`
-2. **Configurar .env:** Crea un archivo `.env` basado en la sección de configuración.
-3. **Lanzar Servidor (Elige uno):**
-   - **Modo Mock:** `python backend/server_mock.py`
+2. **Configurar .env:** Crea un archivo `.env` siguiendo el ejemplo de la sección de configuración.
+3. **Lanzar Servidor (Preferiblemente Foundry):**
    - **Modo Real:** `python backend/server_foundry.py`
-4. **Lanzar UI:** `python ui/app.py` (Asegúrate de que el servidor elegido esté corriendo en el puerto 8000).
+   - **Modo Mock:** `python backend/server_mock.py`
+4. **Lanzar UI:** `python ui/app.py`
 5. **Verificar:** Accede a `http://127.0.0.1:7860`.
-
-### Estado del Proyecto (3 Bullets)
-* **Qué funciona:** Vertical slice completo (UI → backend → LLM/Mock). Contrato estable en `POST /predict`. Sistema de logging de tokens y latencia implementado.
-* **Qué falta:** Carga de documentos específicos para RAG (data/assets) y refinamiento del prompt system.
-* **Bloqueo principal:** Ninguno. El sistema está listo para cambiar de `mock` a `foundry` simplemente editando el `.env`.
-
-### Resumen de Uso (Sesión 2)
-* **Total de llamadas:** (Ver `logs/logs.jsonl`)
-* **Total de tokens:** (Sumatorio de `total_tokens` en logs)
-* **Coste estimado:** N/A (Uso de recurso académico)
 
 ---
 
