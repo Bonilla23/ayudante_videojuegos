@@ -1,11 +1,18 @@
-from fastapi import FastAPI, HTTPException, Request
+import os
+import time
+import uuid
+import json
+from typing import Optional, Dict, Any
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
-from typing import Optional, Dict, Any
-import time
+from dotenv import load_dotenv
 
-app = FastAPI(title="Ayudante Videojuegos API")
+# Cargar variables de entorno
+load_dotenv()
+
+app = FastAPI(title="Ayudante Videojuegos API (MOCK)")
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -23,7 +30,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 class PredictOptions(BaseModel):
     temperature: Optional[float] = Field(0.2, ge=0.0, le=1.0)
-    max_tokens: Optional[int] = Field(256, ge=1, le=2048)
+    max_tokens: Optional[int] = Field(256, ge=1, le=600)
 
 class PredictRequest(BaseModel):
     input: str = Field(..., min_length=1, max_length=1000)
@@ -45,9 +52,6 @@ class PredictResponse(BaseModel):
 
 @app.post("/predict", response_model=PredictResponse)
 async def predict(request: PredictRequest):
-    start_time = time.time()
-    
-    # Validación mínima
     if not request.input.strip():
         return {
             "ok": False,
@@ -58,30 +62,26 @@ async def predict(request: PredictRequest):
             }
         }
 
-    try:
-        # Mock de respuesta de Azure/LLM
-        # En el futuro, aquí se llamará al servicio de Azure
-        mock_output = f"Basado en tus gustos sobre '{request.input}' para la plataforma {request.platform}, te recomiendo explorar titulos similares. Esta es una respuesta simulada (MOCK)."
-        
-        latency_ms = int((time.time() - start_time) * 1000)
-        
-        return {
-            "ok": True,
-            "output": mock_output,
-            "meta": {
-                "model": "gpt-mock-v1",
-                "latency_ms": latency_ms
-            }
+    # Implementación del Plan B (Mock)
+    mock_output = (
+        f"Basado en tus gustos sobre '{request.input}' para la plataforma {request.platform}, "
+        "te recomiendo explorar títulos similares como 'Dark Souls 3' o 'Sekiro'. "
+        "Esta es una respuesta simulada (MOCK)."
+    )
+    
+    return {
+        "ok": True,
+        "output": mock_output,
+        "meta": {
+            "provider": "mock",
+            "deployment": "Mock-Model-V2",
+            "latency_ms": 10,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "request_id": str(uuid.uuid4())
         }
-    except Exception as e:
-        return {
-            "ok": False,
-            "error": {
-                "code": "INTERNAL_ERROR",
-                "message": f"Error interno en el servidor: {str(e)}",
-                "details": {}
-            }
-        }
+    }
 
 if __name__ == "__main__":
     import uvicorn
