@@ -41,8 +41,8 @@ GROUP_ID="G1" # Cambiar por tu grupo
 LOG_PATH="logs/logs.jsonl" # Donde se guarda los Logs
 
 # Azure AI Foundry (DeepSeek)
-AZURE_OPENAI_ENDPOINT="https://cursoai-resource.services.ai.azure.com"
-AZURE_OPENAI_BASE_URL="https://cursoai-resource.services.ai.azure.com/openai/v1"
+AZURE_OPENAI_ENDPOINT="https://your-resource.services.ai.azure.com"
+AZURE_OPENAI_BASE_URL="https://your-resource.services.ai.azure.com/model/version"
 AZURE_OPENAI_DEPLOYMENT_NAME="DeepSeek-V4-Flash"
 AZURE_OPENAI_API_KEY="TU_API_KEY_AQUI"
 ```
