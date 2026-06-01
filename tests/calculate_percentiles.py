@@ -79,7 +79,7 @@ def calculate_percentiles():
             print(f"\n[!] Saltando bloque de {count}: Solo hay {len(all_latencies)} registros.")
 
     print("\n" + "=" * 65)
-    print("💡 GLOSARIO DE MÉTRICAS:")
+    print("GLOSARIO DE MÉTRICAS:")
     print(" - p50: El 50% de las peticiones tardaron menos de este tiempo.")
     print(" - p95: Caso de borde crítico. El 95% de las llamadas son más veloces.")
     print("-" * 65)
