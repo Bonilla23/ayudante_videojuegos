@@ -44,12 +44,24 @@ except Exception as e:
     STEAM_DB = []
     print(f"WARNING: No se pudo cargar la base de datos de Steam: {e}")
 
+import difflib
+
 def buscar_candidatos_locales(juego_referencia: str, plataforma: str, limite: int = 5):
-    # Buscar el juego de referencia en la base de datos
+    # 1. Buscar coincidencia exacta o contenida (ignorando mayúsculas)
     ref_game = next(
         (g for g in STEAM_DB if juego_referencia.lower() in g["name"].lower()),
         None
     )
+    
+    # 2. Si no hay coincidencia directa, intentar búsqueda difusa por nombre
+    if not ref_game:
+        # Normalizar nombres para búsqueda difusa insensible a mayúsculas
+        nombres_map = {g["name"].lower(): g["name"] for g in STEAM_DB}
+        coincidencias = difflib.get_close_matches(juego_referencia.lower(), nombres_map.keys(), n=1, cutoff=0.6)
+        if coincidencias:
+            nombre_real = nombres_map[coincidencias[0]]
+            ref_game = next((g for g in STEAM_DB if g["name"] == nombre_real), None)
+            print(f"DEBUG: No se encontró '{juego_referencia}', usando coincidencia difusa: '{nombre_real}'")
     
     # Filtrar por plataforma compatible
     candidatos = [g for g in STEAM_DB if plataforma in g["platforms"]]
@@ -72,11 +84,13 @@ def buscar_candidatos_locales(juego_referencia: str, plataforma: str, limite: in
             cand["score"] = (genre_overlap * 3) + cat_overlap + (cand.get("rating", 0) / 10)
             
         candidatos.sort(key=lambda x: x.get("score", 0), reverse=True)
+        found = True
     else:
         # Fallback: ordenar por popularidad/rating si el juego no está en catálogo
         candidatos.sort(key=lambda x: x.get("rating", 0), reverse=True)
+        found = False
         
-    return candidatos[:limite]
+    return candidatos[:limite], found
 
 
 def call_and_log(openai_client: OpenAI, deployment: str, messages, log_path: str, group_id: str, exercise_id: str = "P12-S2"):
@@ -192,27 +206,35 @@ async def predict(request: PredictRequest):
 
     try:
         # Pre-filtrar candidatos en local
-        candidatos = buscar_candidatos_locales(request.input, request.platform, limite=5)
+        candidatos, found = buscar_candidatos_locales(request.input, request.platform, limite=5)
         
         # Formatear el catálogo de contexto para el prompt
         catalogo_contexto = ""
         for idx, cand in enumerate(candidatos, 1):
             catalogo_contexto += f"{idx}. {cand['name']} | Géneros: {', '.join(cand['genres'])} | Puntuación: {cand['rating']}/10\n"
-            
+        
+        if found:
+            found_msg = "El juego ha sido localizado en el catálogo. Procede con una recomendación afin.\n"
+            fallback_instruction = ""
+        else:
+            found_msg = "AVISO: El juego de entrada no está en mi base de datos de Steam. Debes mencionar que no dispones de registros detallados sobre él.\n"
+            fallback_instruction = "2. Si el juego es desconocido, el motivo DEBE empezar con: 'Al no disponer de registros sobre este título en mi base de datos, he seleccionado esta opción por su alta popularidad y valoración...' seguido de una breve descripción técnica.\n"
+
         messages = [
             {
                 "role": "system", 
                 "content": (
                     "Eres un experto recomendador de videojuegos.\n"
                     f"El usuario busca una recomendación compatible con {request.platform} basada en su gusto por '{request.input}'.\n\n"
+                    f"{found_msg}"
                     "Debes elegir el mejor candidato ÚNICAMENTE de la siguiente lista de juegos reales en catálogo:\n"
                     f"{catalogo_contexto}\n"
                     "Instrucciones estrictas:\n"
                     "1. Selecciona el juego de la lista anterior que tenga mayor afinidad temática.\n"
-                    "2. Responde estrictamente con un JSON con las claves:\n"
+                    f"{fallback_instruction}"
+                    "3. Responde estrictamente con un JSON con las claves:\n"
                     "   - 'juego': el nombre exacto del juego elegido.\n"
-                    "   - 'motivo': una justificación breve e inteligente de por qué es ideal para él.\n"
-                    "No recomiendes ningún juego que no esté explícitamente en la lista."
+                    "   - 'motivo': una justificación breve e inteligente.\n"
                 )
             },
             {"role": "user", "content": request.input},
