@@ -117,13 +117,49 @@ def run_evaluation():
                     fail_count += 1
                     error_msg = data.get("error", {}).get("message", "Error desconocido")
                     print(f"[{idx}/{len(TEST_CASES)}] Caso: {case['input']} ({case['platform']}) -> ERROR API: {error_msg}")
+                    results.append({
+                        "id": idx,
+                        "input": case["input"],
+                        "platform": case["platform"],
+                        "expected": case["expected"],
+                        "output": "ERROR",
+                        "motivo": f"API Error: {error_msg}",
+                        "status": "ERROR_API",
+                        "latency_ms": dt_ms,
+                        "provider": "unknown",
+                        "note": error_msg
+                    })
             else:
                 fail_count += 1
                 print(f"[{idx}/{len(TEST_CASES)}] Caso: {case['input']} ({case['platform']}) -> ERROR HTTP {response.status_code}")
+                results.append({
+                    "id": idx,
+                    "input": case["input"],
+                    "platform": case["platform"],
+                    "expected": case["expected"],
+                    "output": "ERROR",
+                    "motivo": f"HTTP {response.status_code}",
+                    "status": "ERROR_HTTP",
+                    "latency_ms": dt_ms,
+                    "provider": "unknown",
+                    "note": f"Status code: {response.status_code}"
+                })
                 
         except Exception as e:
             fail_count += 1
             print(f"[{idx}/{len(TEST_CASES)}] Caso: {case['input']} ({case['platform']}) -> ERROR CONEXIÓN: {str(e)}")
+            results.append({
+                "id": idx,
+                "input": case["input"],
+                "platform": case["platform"],
+                "expected": case["expected"],
+                "output": "ERROR",
+                "motivo": "Excepción de conexión o ejecución",
+                "status": "ERROR_CONNECTION",
+                "latency_ms": 0,
+                "provider": "unknown",
+                "note": str(e)
+            })
             
     print("=" * 80)
     print("RESUMEN DE LA EVALUACIÓN EXTENDIDA:")
