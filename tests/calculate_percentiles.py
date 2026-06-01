@@ -54,7 +54,8 @@ def calculate_percentiles():
                 if line.strip():
                     try:
                         data = json.loads(line)
-                        if "latency_ms" in data:
+                        # Solo procesar latencias de peticiones que NO sean errores
+                        if "latency_ms" in data and data.get("status") != "ERROR":
                             all_latencies.append(data["latency_ms"])
                     except json.JSONDecodeError:
                         continue

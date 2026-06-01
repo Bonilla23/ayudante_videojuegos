@@ -82,38 +82,61 @@ def buscar_candidatos_locales(juego_referencia: str, plataforma: str, limite: in
 def call_and_log(openai_client: OpenAI, deployment: str, messages, log_path: str, group_id: str, exercise_id: str = "P12-S2"):
     request_id = str(uuid.uuid4())
     t0 = time.time()
-
-    resp = openai_client.chat.completions.create(
-        model=deployment,
-        messages=messages,
-        max_tokens=600,
-        temperature=0.2,
-    )
-
-    dt_ms = int((time.time() - t0) * 1000)
-    u = resp.usage
-
-    event = {
-        "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-        "group_id": group_id,
-        "exercise_id": exercise_id,
-        "request_id": request_id,
-        "deployment": deployment,
-        "prompt_tokens": u.prompt_tokens,
-        "completion_tokens": u.completion_tokens,
-        "total_tokens": u.total_tokens,
-        "latency_ms": dt_ms,
-    }
-
+    
     # Asegurar que el directorio de logs existe
     log_dir = os.path.dirname(log_path)
     if log_dir and not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    with open(log_path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(event, ensure_ascii=False) + "\n")
+    try:
+        resp = openai_client.chat.completions.create(
+            model=deployment,
+            messages=messages,
+            max_tokens=600,
+            temperature=0.2,
+        )
+        
+        dt_ms = int((time.time() - t0) * 1000)
+        u = resp.usage
 
-    return resp, event
+        event = {
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "group_id": group_id,
+            "exercise_id": exercise_id,
+            "request_id": request_id,
+            "deployment": deployment,
+            "prompt_tokens": u.prompt_tokens,
+            "completion_tokens": u.completion_tokens,
+            "total_tokens": u.total_tokens,
+            "latency_ms": dt_ms,
+            "status": "SUCCESS"
+        }
+        
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(event, ensure_ascii=False) + "\n")
+            
+        return resp, event
+
+    except Exception as e:
+        dt_ms = int((time.time() - t0) * 1000)
+        event = {
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "group_id": group_id,
+            "exercise_id": exercise_id,
+            "request_id": request_id,
+            "deployment": deployment,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "latency_ms": dt_ms,
+            "status": "ERROR",
+            "error_message": str(e)
+        }
+        
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(event, ensure_ascii=False) + "\n")
+            
+        raise e
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
