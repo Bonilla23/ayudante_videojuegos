@@ -34,6 +34,51 @@ client = OpenAI(
     default_headers={"api-key": AZURE_OPENAI_API_KEY},
 )
 
+# Cargar base de datos limpia de Steam
+DATASET_PATH = os.path.join(os.path.dirname(__file__), "../data/steam_clean.json")
+try:
+    with open(DATASET_PATH, "r", encoding="utf-8") as f:
+        STEAM_DB = json.load(f)
+    print(f"Base de datos de Steam cargada con éxito: {len(STEAM_DB)} juegos en memoria.")
+except Exception as e:
+    STEAM_DB = []
+    print(f"WARNING: No se pudo cargar la base de datos de Steam: {e}")
+
+def buscar_candidatos_locales(juego_referencia: str, plataforma: str, limite: int = 5):
+    # Buscar el juego de referencia en la base de datos
+    ref_game = next(
+        (g for g in STEAM_DB if juego_referencia.lower() in g["name"].lower()),
+        None
+    )
+    
+    # Filtrar por plataforma compatible
+    candidatos = [g for g in STEAM_DB if plataforma in g["platforms"]]
+    
+    if ref_game:
+        # Excluir el propio juego de entrada
+        candidatos = [g for g in candidatos if g["name"].lower() != ref_game["name"].lower()]
+        
+        ref_genres = set(ref_game.get("genres", []))
+        ref_cats = set(ref_game.get("categories", []))
+        
+        for cand in candidatos:
+            cand_genres = set(cand.get("genres", []))
+            cand_cats = set(cand.get("categories", []))
+            
+            # Puntuación por afinidad (coincidencia de géneros y categorías)
+            genre_overlap = len(ref_genres.intersection(cand_genres))
+            cat_overlap = len(ref_cats.intersection(cand_cats))
+            
+            cand["score"] = (genre_overlap * 3) + cat_overlap + (cand.get("rating", 0) / 10)
+            
+        candidatos.sort(key=lambda x: x.get("score", 0), reverse=True)
+    else:
+        # Fallback: ordenar por popularidad/rating si el juego no está en catálogo
+        candidatos.sort(key=lambda x: x.get("rating", 0), reverse=True)
+        
+    return candidatos[:limite]
+
+
 def call_and_log(openai_client: OpenAI, deployment: str, messages, log_path: str, group_id: str, exercise_id: str = "P12-S2"):
     request_id = str(uuid.uuid4())
     t0 = time.time()
@@ -123,19 +168,28 @@ async def predict(request: PredictRequest):
     print(f"DEBUG: Procesando '{request.input}' para {request.platform}")
 
     try:
+        # Pre-filtrar candidatos en local
+        candidatos = buscar_candidatos_locales(request.input, request.platform, limite=5)
+        
+        # Formatear el catálogo de contexto para el prompt
+        catalogo_contexto = ""
+        for idx, cand in enumerate(candidatos, 1):
+            catalogo_contexto += f"{idx}. {cand['name']} | Géneros: {', '.join(cand['genres'])} | Puntuación: {cand['rating']}/10\n"
+            
         messages = [
             {
                 "role": "system", 
                 "content": (
-                    "Eres un experto recomendador de videojuegos. Tu misión es sugerir un juego del MISMO GÉNERO y ESTILO "
-                    "que el que proporciona el usuario, pero que sea un título DISTINTO. "
-                    "No busques variedad, busca AFINIDAD TOTAL. "
-                    f"Asegúrate de que sea compatible con {request.platform}. "
-                    "Ejemplos de comportamiento esperado:\n"
-                    "- Input: Counter Strike -> Recomendación: Team Fortress 2 (Mismo género Action FPS)\n"
-                    "- Input: Skyrim -> Recomendación: Dragon's Dogma (Mismo género RPG Fantasía)\n"
-                    "- Input: Portal 2 -> Recomendación: The Talos Principle (Mismo género Puzzles)\n"
-                    "Responde siempre con un JSON con 'juego' y 'motivo' (explicando la similitud técnica y de género)."
+                    "Eres un experto recomendador de videojuegos.\n"
+                    f"El usuario busca una recomendación compatible con {request.platform} basada en su gusto por '{request.input}'.\n\n"
+                    "Debes elegir el mejor candidato ÚNICAMENTE de la siguiente lista de juegos reales en catálogo:\n"
+                    f"{catalogo_contexto}\n"
+                    "Instrucciones estrictas:\n"
+                    "1. Selecciona el juego de la lista anterior que tenga mayor afinidad temática.\n"
+                    "2. Responde estrictamente con un JSON con las claves:\n"
+                    "   - 'juego': el nombre exacto del juego elegido.\n"
+                    "   - 'motivo': una justificación breve e inteligente de por qué es ideal para él.\n"
+                    "No recomiendes ningún juego que no esté explícitamente en la lista."
                 )
             },
             {"role": "user", "content": request.input},

@@ -1,0 +1,132 @@
+{
+    "ts": "2026-06-01T02:36:50",
+    "summary": {
+        "total": 10,
+        "ok": 10,
+        "fail": 0,
+        "precision_percent": 100.0,
+        "avg_latency_ms": 3174.4
+    },
+    "results": [
+        {
+            "id": 1,
+            "input": "Counter Strike",
+            "platform": "Linux",
+            "expected": "Team Fortress Classic",
+            "output": "Champions of Breakfast",
+            "motivo": "Al igual que Counter Strike, Champions of Breakfast es un juego de acción con enfrentamientos rápidos y competitivos, ideal para quienes buscan intensidad y reflejos rápidos en partidas dinámicas.",
+            "status": "OK",
+            "latency_ms": 4185,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 2,
+            "input": "Half-Life",
+            "platform": "Windows",
+            "expected": "Quake",
+            "output": "Left 4 Dead 2",
+            "motivo": "Al igual que Half-Life, Left 4 Dead 2 es un shooter en primera persona con intensa acción y combates contra hordas de enemigos, ofreciendo una experiencia cooperativa frenética que captura la esencia de la lucha contra criaturas en entornos opresivos.",
+            "status": "OK",
+            "latency_ms": 3732,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 3,
+            "input": "Portal 2",
+            "platform": "Mac",
+            "expected": "The Talos Principle",
+            "output": "BattleBlock Theater®",
+            "motivo": "Al igual que Portal 2, BattleBlock Theater® combina puzzles cooperativos, humor absurdo y una narrativa ligera, ofreciendo una experiencia de plataformas y resolución de acertijos que encantará a los fans de la creatividad y el trabajo en equipo.",
+            "status": "OK",
+            "latency_ms": 3170,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 4,
+            "input": "Left 4 Dead 2",
+            "platform": "Linux",
+            "expected": "Warhammer: Vermintide 2",
+            "output": "Dying Light",
+            "motivo": "Combina acción cooperativa en primera persona con zombis y un mundo abierto, similar a Left 4 Dead 2, pero añadiendo parkour y RPG, ideal para quienes buscan más profundidad en la supervivencia.",
+            "status": "OK",
+            "latency_ms": 2964,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 5,
+            "input": "Hollow Knight",
+            "platform": "Mac",
+            "expected": "Celeste",
+            "output": "Celeste",
+            "motivo": "Al igual que Hollow Knight, Celeste es un metroidvania en 2D con un enfoque en la exploración precisa, plataformas desafiantes y una atmósfera melancólica. Ambos comparten una narrativa minimalista pero profunda, y una dificultad gratificante que recompensa la perseverancia.",
+            "status": "OK",
+            "latency_ms": 3264,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 6,
+            "input": "Forza Horizon 5",
+            "platform": "Windows",
+            "expected": "Dirt 5",
+            "output": "Champions of Breakfast",
+            "motivo": "Aunque Forza Horizon 5 es un simulador de carreras de mundo abierto, 'Champions of Breakfast' comparte la emoción de la velocidad y la competencia en un entorno dinámico, con una puntuación perfecta que garantiza una experiencia adictiva y desafiante para los amantes de la acción.",
+            "status": "OK",
+            "latency_ms": 2906,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 7,
+            "input": "Age Of Empires II",
+            "platform": "Linux",
+            "expected": "0 A.D.",
+            "output": "War for the Overworld",
+            "motivo": "Combina estrategia en tiempo real con gestión de recursos y construcción de bases, similar a Age of Empires II, pero con un enfoque en temática de mazmorras y humor oscuro, ofreciendo una experiencia táctica profunda y compatible con Linux.",
+            "status": "OK",
+            "latency_ms": 2996,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 8,
+            "input": "Skyrim",
+            "platform": "Windows",
+            "expected": "Dragon's Dogma",
+            "output": "Endless Legend™",
+            "motivo": "Combina la exploración de un mundo abierto con elementos de RPG y estrategia, similar a la libertad de Skyrim, pero con un enfoque en la construcción de imperios y decisiones tácticas.",
+            "status": "OK",
+            "latency_ms": 2808,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 9,
+            "input": "Stardew Valley",
+            "platform": "Windows",
+            "expected": "Terraria",
+            "output": "Craft The World",
+            "motivo": "Combina la gestión de recursos y la construcción de una base con elementos de supervivencia y RPG, similar a la mezcla de agricultura, exploración y personalización que disfrutas en Stardew Valley.",
+            "status": "OK",
+            "latency_ms": 2821,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        },
+        {
+            "id": 10,
+            "input": "Civilization VI",
+            "platform": "Windows",
+            "expected": "Humankind",
+            "output": "Don't Escape: 4 Days in a Wasteland",
+            "motivo": "Aunque no es un 4X como Civilization VI, comparte la toma de decisiones estratégicas y gestión de recursos en un entorno de supervivencia, ideal para quienes disfrutan planificar a largo plazo y enfrentar consecuencias tácticas.",
+            "status": "OK",
+            "latency_ms": 2898,
+            "provider": "foundry",
+            "note": "Pasa métrica de calidad"
+        }
+    ]
+}

@@ -14,6 +14,51 @@ load_dotenv()
 
 app = FastAPI(title="Ayudante Videojuegos API (MOCK)")
 
+# Cargar base de datos limpia de Steam
+DATASET_PATH = os.path.join(os.path.dirname(__file__), "../data/steam_clean.json")
+try:
+    with open(DATASET_PATH, "r", encoding="utf-8") as f:
+        STEAM_DB = json.load(f)
+    print(f"Base de datos de Steam (MOCK) cargada con éxito: {len(STEAM_DB)} juegos en memoria.")
+except Exception as e:
+    STEAM_DB = []
+    print(f"WARNING: No se pudo cargar la base de datos de Steam: {e}")
+
+def buscar_candidatos_locales(juego_referencia: str, plataforma: str, limite: int = 5):
+    # Buscar el juego de referencia en la base de datos
+    ref_game = next(
+        (g for g in STEAM_DB if juego_referencia.lower() in g["name"].lower()),
+        None
+    )
+    
+    # Filtrar por plataforma compatible
+    candidatos = [g for g in STEAM_DB if plataforma in g["platforms"]]
+    
+    if ref_game:
+        # Excluir el propio juego de entrada
+        candidatos = [g for g in candidatos if g["name"].lower() != ref_game["name"].lower()]
+        
+        ref_genres = set(ref_game.get("genres", []))
+        ref_cats = set(ref_game.get("categories", []))
+        
+        for cand in candidatos:
+            cand_genres = set(cand.get("genres", []))
+            cand_cats = set(cand.get("categories", []))
+            
+            # Puntuación por afinidad
+            genre_overlap = len(ref_genres.intersection(cand_genres))
+            cat_overlap = len(ref_cats.intersection(cand_cats))
+            
+            cand["score"] = (genre_overlap * 3) + cat_overlap + (cand.get("rating", 0) / 10)
+            
+        candidatos.sort(key=lambda x: x.get("score", 0), reverse=True)
+    else:
+        # Fallback si no está el juego en catálogo
+        candidatos.sort(key=lambda x: x.get("rating", 0), reverse=True)
+        
+    return candidatos[:limite]
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
@@ -63,11 +108,23 @@ async def predict(request: PredictRequest):
             }
         }
 
-    # Implementación del Plan B con el nuevo contrato (Ejemplo: Skyrim)
+    # Buscar dinámicamente un candidato en el catálogo local para simular la lógica real
+    candidatos = buscar_candidatos_locales(request.input, request.platform, limite=1)
+    
+    if candidatos:
+        juego = candidatos[0]["name"]
+        genres = ", ".join(candidatos[0].get("genres", ["Acción"]))
+        cats = ", ".join(candidatos[0].get("categories", ["Single-player"])[:2])
+        motivo = f"[MOCK] Género {genres}, categorías {cats}. Compatible con {request.platform}."
+    else:
+        # Fallback si no hay ningún candidato
+        juego = "Half-Life 2"
+        motivo = f"[MOCK] Género Acción, categoría Single-player. Compatible con {request.platform}."
+
     return {
         "ok": True,
-        "output": "Dragon's Dogma",
-        "motivo": f"Género RPG, categoría Open World y temática fantasía. Compatible con {request.platform}.",
+        "output": juego,
+        "motivo": motivo,
         "meta": {
             "provider": "mock",
             "deployment": "Mock-Model-V3",
