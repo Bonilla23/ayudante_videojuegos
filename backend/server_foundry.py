@@ -218,7 +218,7 @@ async def predict(request: PredictRequest):
             fallback_instruction = ""
         else:
             found_msg = "AVISO: El juego de entrada no está en mi base de datos de Steam. Debes mencionar que no dispones de registros detallados sobre él.\n"
-            fallback_instruction = "2. Si el juego es desconocido, el motivo DEBE empezar con: 'Al no disponer de registros sobre este título en mi base de datos, he seleccionado esta opción por su alta popularidad y valoración...' seguido de una breve descripción técnica.\n"
+            fallback_instruction = "2. Si el juego es desconocido, el motivo DEBE ser exactamente: 'Al no disponer de registros sobre este título en mi base de datos, he seleccionado esta opción por su alta popularidad y valoración.' seguido de una descripción breve del juego elegido, SIN intentar relacionarlo con el input del usuario.\n"
 
         messages = [
             {
