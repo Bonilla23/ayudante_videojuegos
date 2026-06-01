@@ -6,7 +6,7 @@ BACKEND_URL = "http://localhost:8000/predict"
 
 def predict_videojuego(user_input, platform):
     if not user_input or not user_input.strip():
-        return "Por favor, introduce una pregunta válida.", "", {}
+        return "Por favor, introduce un juego válido.", "", {}
 
     payload = {
         "input": user_input.strip(),
