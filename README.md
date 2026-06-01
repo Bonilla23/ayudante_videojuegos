@@ -58,7 +58,6 @@ Accede a la interfaz en tu navegador en: **`http://127.0.0.1:7860`**
 *   `ui/app.py`: Interfaz de usuario interactiva y responsiva desarrollada en Gradio.
 *   `data/steam_clean.json`: Base de datos local optimizada de Steam (8,762 juegos) usada para el RAG.
 *   `logs/logs.jsonl`: Archivo de telemetría estructurado que registra el consumo y la latencia en vivo.
-*   `docs/Checkpoint-4-IkerFernandez.md`: Documento oficial de entrega del Checkpoint 4 (Rendimiento, Costes y Fiabilidad).
 *   `tests/`: Carpeta que contiene las suites de pruebas de calidad:
     *   `run_eval.py`: Evaluación automatizada original (10 casos de prueba).
     *   `run_eval_extended.py`: Nueva suite de pruebas optimizada con **25 casos de prueba** (objetivo final).
