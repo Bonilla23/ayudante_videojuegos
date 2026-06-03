@@ -73,7 +73,7 @@ def calculate_percentiles():
     # Los tres bloques solicitados por el usuario: 5, 10 y 22 pruebas
     for count in [5, 10, 22]:
         if count <= len(all_latencies):
-            subset = all_latencies[:count]
+            subset = all_latencies[-count:]
             print_metrics_block(subset, f"{count} pruebas")
         else:
             print(f"\n[!] Saltando bloque de {count}: Solo hay {len(all_latencies)} registros.")
