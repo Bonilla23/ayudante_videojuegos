@@ -19,7 +19,14 @@ def predict_videojuego(user_input, platform):
 
     try:
         response = requests.post(BACKEND_URL, json=payload, timeout=15)
-        data = response.json()
+        try:
+            data = response.json()
+        except ValueError:
+            return (
+                "Respuesta no válida",
+                f"El servidor respondió con un formato no válido (Código HTTP {response.status_code}).\n\nPor favor, contacta con soporte o comprueba los registros del servidor backend.",
+                {"response_text": response.text[:1000]}
+            )
 
         if response.status_code == 200 and data.get("ok"):
             juego = data.get("output", "Sin respuesta.")
@@ -27,12 +34,32 @@ def predict_videojuego(user_input, platform):
             meta = data.get("meta", {})
             return juego, motivo, meta
         else:
-            error = data.get("error", {})
-            msg = error.get("message", "Error inesperado")
-            return f"Error: {msg}", "", data
+            error = data.get("error", {}) if isinstance(data, dict) else {}
+            msg = error.get("message", "Error inesperado en el servidor.")
+            return (
+                "Error del servidor",
+                f"El servidor backend devolvió un error:\n\n{msg}",
+                data if isinstance(data, dict) else {}
+            )
 
+    except requests.exceptions.Timeout as e:
+        return (
+            "Tiempo de espera agotado",
+            "El servidor de recomendaciones tardó demasiado en responder.\n\nPor favor, verifica el estado del backend e inténtalo de nuevo.",
+            {"error": "Timeout", "details": str(e)}
+        )
+    except requests.exceptions.ConnectionError as e:
+        return (
+            "Error de conexión",
+            "No se pudo conectar con el servidor de recomendaciones.\n\nPor favor, asegúrate de que el servicio backend esté ejecutándose en http://localhost:8000.",
+            {"error": "ConnectionError", "details": str(e)}
+        )
     except Exception as e:
-        return f"Error de conexión: {str(e)}", "", {}
+        return (
+            "Error inesperado",
+            f"Ocurrió un error inesperado al intentar comunicarse con el backend:\n\n{str(e)}",
+            {"error": type(e).__name__, "details": str(e)}
+        )
 
 # Interfaz UI
 with gr.Blocks(title="Ayudante de Videojuegos") as demo:
